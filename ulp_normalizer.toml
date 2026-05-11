@@ -1,0 +1,82 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║          ULP Normalizer v0.3 — Configuration File           ║
+# ║                                                             ║
+# ║  Every key is OPTIONAL. Remove this file entirely and the   ║
+# ║  program runs on hardcoded sane defaults.                   ║
+# ║  Uncomment and modify only what you need.                   ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+[io]
+input_file  = "dump.txt"
+output_file = "output.csv"
+error_log   = "errors.log"
+chunk_size  = 8388608         # 8 MB — tune up for NVMe, down for HDD/SAN
+
+[performance]
+threads     = 0               # 0 = auto-detect CPU core count
+csv_buffer  = 1048576         # 1 MB CSV write buffer
+err_buffer  = 65536           # 64 KB error log buffer
+
+[encoding]
+# "auto"         = chardetng probes first sample_bytes
+# "utf-8"        = assume UTF-8
+# "windows-1252" = force Windows-1252
+# "latin-1"      = force ISO-8859-1
+# "utf-16-le"    = force UTF-16 LE
+mode                 = "auto"
+sample_bytes         = 8192
+confidence_threshold = 0.75
+fallback_encoding    = "utf-8"
+
+[preprocessing]
+strip_bom               = true
+normalize_line_endings  = true
+skip_prefixes           = ["#", "//", "--"]
+max_line_bytes          = 4096
+try_base64_decode       = false
+unquote_fields          = true
+unicode_normalize       = true
+
+[parser]
+delimiters        = [":", "|", "\t", ";", " "]
+url_schemes       = ["http", "https", "ftp", "ftps", "sftp", "android",
+                     "socks5", "socks4", "ssh", "mysql", "mssql",
+                     "postgresql", "redis", "smtp", "imap", "pop3",
+                     "ldap", "vnc", "rdp", "telnet", "mongodb"]
+entropy_threshold = 3.2
+field_order       = "auto"
+recovery_mode     = "skip"    # "skip" | "partial" | "aggressive"
+
+[parser.regex_overrides]
+# Uncomment to override built-in patterns:
+# url_pattern      = "(?i)https?://[^\\s:@,|]+"
+# email_pattern    = "[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}"
+# username_pattern = "^[a-zA-Z0-9._\\-]{1,128}$"
+
+[validation]
+strict_mode         = true
+url_max_length      = 2048
+username_min_length = 1
+username_max_length = 128
+password_min_length = 1
+password_max_length = 256
+deduplicate         = false
+
+[output]
+write_headers = true
+csv_delimiter = ","
+force_quote   = false
+
+[post_process]
+deduplicate                  = true
+normalize_emails             = true
+strip_non_ascii              = true
+min_password_len             = 4      # passwords with len <= 4 are removed
+clean_url_schemes            = true
+strip_default_ports          = true
+strip_url_paths              = false
+filter_placeholder_passwords = true
+remove_pass_equals_user      = true
+lowercase_usernames          = true
+reject_unknown_schemes       = false
+export_stats                 = true
